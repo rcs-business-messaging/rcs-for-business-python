@@ -35,12 +35,9 @@ def add_test_device(agentId, msisdn):
     "phoneNumber": msisdn
   }
 
-  resp, content = http_auth.request(endpoint_url,
-    method='POST',
-    headers={'Content-Type':'application/json',},
-    body=json.dumps(body))
-    
-  return json.loads(content)
+  response = authed_session.post(endpoint_url, data=json.dumps(body))
+
+  return json.loads(response.content)
 
 def get_tester(agentId, testerId):
   """
@@ -55,11 +52,9 @@ def get_tester(agentId, testerId):
 
   logger.info('Calling ' + endpoint_url)
 
-  resp, content = http_auth.request(endpoint_url,
-    method='GET',
-    headers={'Content-Type':'application/json'})
-    
-  return json.loads(content)
+  response = authed_session.get(endpoint_url)
+
+  return json.loads(response.content)
 
 
 def delete_tester(agentId, testerId):
@@ -75,9 +70,7 @@ def delete_tester(agentId, testerId):
 
   logger.info('Calling ' + endpoint_url)
 
-  resp, content = http_auth.request(endpoint_url,
-    method='DELETE',
-    headers={'Content-Type':'application/json'})
+  response = authed_session.delete(endpoint_url)
 
   return
 
@@ -95,9 +88,7 @@ def list_testers(agentId):
 
   logger.info('Calling ' + endpoint_url)
 
-  resp, content = http_auth.request(endpoint_url,
-    method='GET',
-    headers={'Content-Type':'application/json'})
+  response = authed_session.get(endpoint_url)
 
-  return json.loads(content)
+  return json.loads(response.content)
 
