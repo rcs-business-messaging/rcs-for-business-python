@@ -17,6 +17,7 @@ import logging
 
 from BrandOperations import *
 from TesterOperations import *
+from AttachmentOperations import *
 
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ def main():
   parser = argparse.ArgumentParser()
 
   parser.add_argument('-m', action='store',
-    required=True, dest='agent_mode', help = 'Use list_brands, get_brand, add_test_device, get_tester, delete_tester or list_testers')
+    required=True, dest='agent_mode', help = 'Use list_brands, get_brand, add_test_device, get_tester, delete_tester, list_testers or upload_verification_document')
 
   parser.add_argument('-a', action='store',
     required=False, dest='agent_id', help = 'Agent id. (The part before "@rbm.goog")', default='')
@@ -40,6 +41,12 @@ def main():
 
   parser.add_argument('-msisdn', action='store',
     required=False, dest='msisdn', help = 'Mobile number, in full international format: +CCNNNNNNNNNN', default='')
+
+  parser.add_argument('-f', action='store',
+    required=False, dest='file_path', help = 'Verification document PDF file path', default='')
+
+  parser.add_argument('-source', action='store',
+    required=False, dest='source', help = 'Attachment operation source (default: VERIFICATION_PAGE)', default='VERIFICATION_PAGE')
 
   args = parser.parse_args()
 
@@ -98,7 +105,25 @@ def main():
     logger.info(res)
     return
 
-  print('Unknown command: use list_brands, get_brand, add_test_device, get_tester, delete_tester or list_testers')
+  # Attachment operations
+  if 'upload_verification_document' in args.agent_mode:
+    if args.file_path == '':
+      print('-f <file path> is required')
+      return
+    if args.agent_id == '':
+      print('-a <agent id> is required')
+      return
+    if args.brand_id == '':
+      print('-b <brand id> is required')
+      return
+
+    parent = f"{args.brand_id}/agents/{args.agent_id}"
+    res = upload_verification_document(parent, args.file_path, args.source)
+    logger.info('Upload result:')
+    logger.info(res)
+    return
+
+  print('Unknown command: use list_brands, get_brand, add_test_device, get_tester, delete_tester, list_testers or upload_verification_document')
 
 if __name__ == '__main__':
   main()
